@@ -1,24 +1,24 @@
 from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 from flask_cors import CORS
+from config import Config
 from models import db
-from routes import auth_bp  # Import Blueprint
+from routes import auth_bp  # Import your routes
 
 # Initialize Flask app
 app = Flask(__name__)
+app.config.from_object(Config)
+
+# Enable CORS (optional, for frontend communication)
 CORS(app)
 
-# Database Configuration
-app.config.from_object('config.Config')
-
-# Initialize database with app
+# Initialize database & migrations
 db.init_app(app)
+migrate = Migrate(app, db)
 
-# Register authentication Blueprint
+# Register Blueprints (routes)
 app.register_blueprint(auth_bp)
 
-# Create tables if they don't exist
-with app.app_context():
-    db.create_all()
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run(debug=True)
